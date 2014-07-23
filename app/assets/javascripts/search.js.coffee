@@ -12,11 +12,7 @@ $(document).ready ->
           url: '/search.json?q=' + $search.val()
           async: true
         $.ajax(ajaxOptions).done((data) ->
-          if data.length > 0
-            console.log data
-            console.log data[0]['href']
-          else
-            console.log 'no data'
+          $('#search-results').html(data['html'])
         )
     , 500)
 
