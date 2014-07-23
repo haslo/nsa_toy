@@ -60,7 +60,7 @@ def store_person(conn, name, href)
     conn.exec(
       <<-SQL
       insert into people("name", href, created_at, updated_at)
-      select '#{name}', '#{href}', NOW(), NOW()
+      select '#{name}', '#{BASE_WIKIPEDIA_URL}#{href}', NOW(), NOW()
       where not exists
       (select id from people where "name" = '#{name}')
       returning id
