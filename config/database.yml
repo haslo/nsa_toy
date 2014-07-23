@@ -1,0 +1,18 @@
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: nsa_toy_development
+  pool: 5
+  username: postgres
+  password: postgres
+
+test: &test
+  adapter: postgresql
+  encoding: unicode
+  database: nsa_toy_test
+  pool: 5
+  username: postgres
+  password: postgres
+
+cucumber:
+  <<: *test
