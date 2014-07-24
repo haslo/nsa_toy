@@ -7,7 +7,6 @@ require 'pg'
 
 BASE_WIKIPEDIA_URL = "http://en.wikipedia.org"
 LIST_URL = "#{BASE_WIKIPEDIA_URL}/wiki/List_of_Nobel_laureates"
-MAX_NUMBER_OF_PEOPLE = 1000000
 MAX_PARAGRAPHS_PER_PERSON = 10
 NAME_REGEX = /\A[A-Z]([a-zàáâäãåèéêëìíîïòóôöõøùúûüÿýñçčšž]+|\.)([A-Z]\.)? [A-Z][a-zàáâäãåèéêëìíîïòóôöõøùúûüÿýñçčšž]+\Z/
 WIKI_REGEX = /\/wiki\//
@@ -17,10 +16,12 @@ def do_scrape(page, conn, stack_level = 0)
   sleep 0.1
   hrefs = extract_hrefs_from_page(page)
   hrefs.sort{|_,_| Random.rand(3) - 1}.each do |text, href|
-    number_of_people = conn.exec('select count(*) from people')[0]['count'].to_i
-    number_of_paragraphs = conn.exec('select count(*) from paragraphs')[0]['count'].to_i
-    if number_of_people < MAX_NUMBER_OF_PEOPLE && stack_level <= MAX_STACK_LEVEL
-      print "\rstack: #{stack_level} people: #{number_of_people} paragraphs: #{number_of_paragraphs}"
+    if stack_level <= MAX_STACK_LEVEL
+      if Random.rand(4) == 2
+        number_of_people = conn.exec('select count(*) from people')[0]['count'].to_i
+        number_of_paragraphs = conn.exec('select count(*) from paragraphs')[0]['count'].to_i
+        print "\rseconds: #{((Time.now - @start_time) / 60 * 100).floor} stack: #{stack_level} people: #{number_of_people} paragraphs: #{number_of_paragraphs}"
+      end
       add_person_data_to_database(conn, href, stack_level, text)
     end
   end
@@ -84,8 +85,7 @@ def store_paragraph(conn, person_id, text)
 end
 
 conn = PGconn.connect("localhost", 5432, "", "", "nsa_toy_development")
-conn.exec('delete from people')
-conn.exec('delete from paragraphs')
+@start_time = Time.now
 start_page = Nokogiri::HTML(open(LIST_URL))
 do_scrape(start_page, conn)
 print "\n"
