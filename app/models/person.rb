@@ -13,11 +13,13 @@ class Person < ActiveRecord::Base
   scope :search_with_trigrams,        ->(query) { where("name % ?", query) }
   scope :search_with_view_trigrams,   ->(query) { joins(:searchable_people).merge(SearchablePeople.search_with_trigrams(query)) }
 
+  scope :ordered_by_levenshtein,      ->(query) { order("levenshtein(name, '#{query}') asc") }
+
   has_many :paragraphs
   has_one :searchable_people, foreign_key: :id
 
   def self.search(query)
-    search_with_like(query)
+    search_with_like(query)#.ordered_by_levenshtein(query)
   end
 
 end
