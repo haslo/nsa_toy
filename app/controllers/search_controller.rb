@@ -2,6 +2,9 @@ class SearchController < ApplicationController
 
   def show
     respond_to do |format|
+      format.html do
+        redirect_to root_path(q: params[:q])
+      end
       format.json do
         found_people = Person.search(params[:q])
         if found_people.count > 20

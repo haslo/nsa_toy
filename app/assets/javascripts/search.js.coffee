@@ -16,6 +16,8 @@ $(document).ready ->
         )
     , 500)
 
-  $search.change triggerSearch
+  $search.change  triggerSearch
   $search.keydown triggerSearch
-  $search.keyup triggerSearch
+  $search.keyup   triggerSearch
+
+  triggerSearch()

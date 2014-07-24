@@ -1,3 +1,5 @@
-%ul
+%table#results-table
   - results.each do |result|
-    %li= result.name
+    %tr
+      %td= result.name
+      %td= link_to 'link', result.href

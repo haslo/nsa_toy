@@ -5,12 +5,29 @@ html {
 }
 
 h1 {
-  font-size: 150px;
+  font-size: 130px;
   padding: 0 0 0 0;
   margin: 0 0 40px 0;
+
+  img {
+    position: relative;
+    top: 30px;
+    margin-right: -60px;
+    width:  220px;
+    height: 220px;
+  }
 }
 
 input {
   font-size: large;
   width: 400px;
+}
+
+#search-results {
+  padding-top: 30px;
+
+  #results-table {
+    width: 100%;
+    background: #CCCCCC;
+  }
 }

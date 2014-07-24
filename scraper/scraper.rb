@@ -20,7 +20,7 @@ def do_scrape(page, conn, stack_level = 0)
       if Random.rand(4) == 2
         number_of_people = conn.exec('select count(*) from people')[0]['count'].to_i
         number_of_paragraphs = conn.exec('select count(*) from paragraphs')[0]['count'].to_i
-        print "\rseconds: #{((Time.now - @start_time) / 60 * 100).floor} stack: #{stack_level} people: #{number_of_people} paragraphs: #{number_of_paragraphs}"
+        print "\rseconds: #{((Time.now - @start_time) / 60 * 100).floor} stack: #{stack_level} people: #{number_of_people} paragraphs: #{number_of_paragraphs} speed(people/second): #{'%2f' % ((Time.now - @start_time) / 60 * 100 / (number_of_people - @initial_number_of_people))}"
       end
       add_person_data_to_database(conn, href, stack_level, text)
     end
@@ -86,6 +86,7 @@ end
 
 conn = PGconn.connect("localhost", 5432, "", "", "nsa_toy_development")
 @start_time = Time.now
+@initial_number_of_people = conn.exec('select count(*) from people')[0]['count'].to_i
 start_page = Nokogiri::HTML(open(LIST_URL))
 do_scrape(start_page, conn)
 print "\n"
