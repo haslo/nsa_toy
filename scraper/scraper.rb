@@ -7,19 +7,20 @@ require 'pg'
 
 BASE_WIKIPEDIA_URL = "http://en.wikipedia.org"
 LIST_URL = "#{BASE_WIKIPEDIA_URL}/wiki/List_of_Nobel_laureates"
-MAX_NUMBER_OF_PEOPLE = 500
-MAX_PARAGRAPHS_PER_PERSON = 8
-NAME_REGEX = /\A[A-Z][a-zàáâäãåèéêëìíîïòóôöõøùúûüÿýñçčšž]+ [A-Z][a-zàáâäãåèéêëìíîïòóôöõøùúûüÿýñçčšž]+\Z/
+MAX_NUMBER_OF_PEOPLE = 1000000
+MAX_PARAGRAPHS_PER_PERSON = 10
+NAME_REGEX = /\A[A-Z]([a-zàáâäãåèéêëìíîïòóôöõøùúûüÿýñçčšž]+|\.)([A-Z]\.)? [A-Z][a-zàáâäãåèéêëìíîïòóôöõøùúûüÿýñçčšž]+\Z/
 WIKI_REGEX = /\/wiki\//
-MAX_STACK_LEVEL = 2
+MAX_STACK_LEVEL = 5
 
 def do_scrape(page, conn, stack_level = 0)
   sleep 0.1
-  print '.'
   hrefs = extract_hrefs_from_page(page)
   hrefs.sort{|_,_| Random.rand(3) - 1}.each do |text, href|
     number_of_people = conn.exec('select count(*) from people')[0]['count'].to_i
-    if number_of_people < MAX_NUMBER_OF_PEOPLE && stack_level < MAX_STACK_LEVEL
+    number_of_paragraphs = conn.exec('select count(*) from paragraphs')[0]['count'].to_i
+    if number_of_people < MAX_NUMBER_OF_PEOPLE && stack_level <= MAX_STACK_LEVEL
+      print "\rstack: #{stack_level} people: #{number_of_people} paragraphs: #{number_of_paragraphs}"
       add_person_data_to_database(conn, href, stack_level, text)
     end
   end
@@ -87,3 +88,4 @@ conn.exec('delete from people')
 conn.exec('delete from paragraphs')
 start_page = Nokogiri::HTML(open(LIST_URL))
 do_scrape(start_page, conn)
+print "\n"
