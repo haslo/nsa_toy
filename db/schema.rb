@@ -11,10 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140723201956) do
+ActiveRecord::Schema.define(version: 20140724154316) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_trgm"
+  enable_extension "fuzzystrmatch"
+  enable_extension "btree_gist"
 
   create_table "paragraphs", force: true do |t|
     t.integer  "person_id"
@@ -24,6 +27,7 @@ ActiveRecord::Schema.define(version: 20140723201956) do
   end
 
   add_index "paragraphs", ["person_id"], name: "index_paragraphs_on_person_id", using: :btree
+  add_index "paragraphs", ["text"], name: "text_trigram_index", using: :gin
 
   create_table "people", force: true do |t|
     t.string   "name"
@@ -31,5 +35,7 @@ ActiveRecord::Schema.define(version: 20140723201956) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "people", ["name"], name: "name_trigram_index", using: :gin
 
 end

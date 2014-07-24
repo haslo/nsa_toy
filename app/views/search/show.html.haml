@@ -1,5 +1,9 @@
 %table#results-table
   - results.each do |result|
     %tr
-      %td= result.name
-      %td= link_to 'link', result.href
+      %th= result.name
+      %th= link_to 'link', result.href
+    %tr
+      %td.result-paragraphs{colspan: 2}
+        - result.paragraphs.map(&:text).each do |text|
+          %p= truncate(text, length: 100)
